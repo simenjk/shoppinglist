@@ -1,0 +1,46 @@
+# Titles for the new Window
+meal_title_1 = "Meal One"
+meal_title_2 = "Meal Two"
+meal_title_3 = "Meal Three"
+meal_title_4 = "Meal Four"
+
+# Dictionary containing meals
+meals_1 = {
+    'Monday': 'Lasagna',
+    'Tuesday': 'Chicken Sandwich',
+    'Wednesday': 'Salmon',
+    'Thursday': 'Vegetable Soup',
+    'Friday': 'Taco',
+    'Saturday': 'Pizza',
+    'Sunday': 'Spaghetti'
+}
+
+meals_2 = {
+    'Monday': 'Shepherds Pie',
+    'Tuesday': 'Turkey',
+    'Wednesday': 'Ramen',
+    'Thursday': 'Tika Masala',
+    'Friday': 'Spring Rolls',
+    'Saturday': 'Pasta',
+    'Sunday': 'Chili Soup'
+}
+
+meals_3 = {
+    'Monday': 'Ratatouille',
+    'Tuesday': 'Meat Pie',
+    'Wednesday': 'Enchiladas',
+    'Thursday': 'Blue Whale',
+    'Friday': 'Kebab',
+    'Saturday': 'Quesadillas',
+    'Sunday': 'Salad'
+}
+
+meals_4 = {
+    'Monday': 'Beef and Broccoli Stir-Fry',
+    'Tuesday': 'Chilli-salt salmon',
+    'Wednesday': 'Vegan Burger',
+    'Thursday': 'BBQ Chicken',
+    'Friday': 'Pulled Pork',
+    'Saturday': 'Greek Salad',
+    'Sunday': 'Pasta'
+}
