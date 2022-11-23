@@ -1,0 +1,244 @@
+# ===== Imports
+
+from tkinter import *
+from tkinter import messagebox
+from tkinter.font import Font
+from PIL import ImageTk, Image
+
+from meals import *
+
+# Root window that contains all the widgets
+root = Tk()
+
+# List for storing the product elements in the listbox
+listbox_data = []
+
+
+# ===== FUNCTIONS
+
+
+def open_saved_list():
+    """
+    Loads data from .txt file to
+    my_listbox and listbox_data
+    at the opening.
+    """
+    try:
+        # If there is a file product_save.txt, insert it to my_listbox and append the content to listbox_data
+        with open("product_save.txt", "r", encoding="utf-8") as file:
+            for f in file:
+                my_listbox.insert(END, f.strip())
+                listbox_data.append(f.strip())
+    except FileNotFoundError:
+        # If there is no product_save.txt file, open error message:
+        messagebox.showerror("File Error", "Can not find product_save.txt.")
+
+
+def add_product():
+    """
+    Adds a new item to my_listbox and
+    new element to listbox_data.
+    """
+    if content.get() == '':
+        # If nothing is written in product_entry, open warning message:
+        messagebox.showwarning("Empty Entry box", "Please write a product you would like to add.")
+    else:
+        # Insert to my_listbox
+        my_listbox.insert(END, content.get())
+        # Appends string element to listbox_data list
+        listbox_data.append(content.get())
+
+
+def delete_selected():
+    """
+    Deletes a selected item from my_listbox
+    and an element from listbox_data.
+    """
+    try:
+        # Variable for selected item in my_listbox
+        selected_item = my_listbox.get(my_listbox.curselection())
+        # Deletes selected item from the listbox
+        my_listbox.delete(ANCHOR)
+        # Deletes selected item from listbox_data list
+        listbox_data.pop(listbox_data.index(selected_item))
+    except TclError:
+        # If nothing is selected, opens warning message
+        messagebox.showwarning("Selection Error", "Please select a product you would like to delete.")
+
+
+def delete_all():
+    """
+    Deletes all elements in listbox
+    and listbox_data.
+    """
+    # For using listbox_data inside the function
+    global listbox_data
+    if not listbox_data:
+        # Empty list opens warning message
+        messagebox.showwarning("Empty list", "Your shopping list is already empty.")
+    else:
+        # Deletes all items from the listbox
+        my_listbox.delete(0, END)
+        # Deletes all elements in list
+        listbox_data = []
+
+
+def open_new_window(menu_list, window_title):
+    """
+    Opens a new window where a dictionary with items
+    will show up.
+    Can add items to my_listbox and listbox_data.
+
+    :param menu_list:
+    Dictionary of food items.
+    Key: Day
+    Value: Food Item
+    :param window_title:
+    String with name of the title
+    """
+
+    # Creates a new window
+    window = Toplevel()
+    # Title for window with string argument
+    window.title(window_title)
+    # Size for window
+    window.geometry('275x200')
+    # Background color for window
+    window.config(bg='old lace')
+    # Top icon for window
+    window.iconbitmap('shopping_icon.ico')
+
+    # Label with text
+    win_rec_lbl = Label(window, text='Recommended meals', bg='old lace', font='arial 9 bold')
+    win_rec_lbl.pack()
+    # Label with recommended meals
+    # Dictionary,  Key = day, Value = meal
+    win_lbl = Label(window, text=menu_list, bg='old lace')
+    # Prints out dictionary line by line
+    win_lbl['text'] = '\n'.join('{} : {}'.format(k, d) for k, d in menu_list.items())
+    win_lbl.pack()
+
+    def window_add():
+        """
+        Adds all the items in the menu_list dictionary to my_listbox
+        and listbox_data
+        """
+        for value in menu_list.values():
+            # Inserts value in dictionary to my_listbox
+            my_listbox.insert(END, value)
+            # Appends value in dictionary to listbox_data as element
+            listbox_data.append(value)
+
+    # Button to add meals from dictionary
+    win_add_btn = Button(window, text='Add', command=window_add,
+                         pady=3, padx=5, bg='LightSteelBlue1')
+    win_add_btn.pack()
+
+    # Exit button to close the window
+    win_exit_btn = Button(window, text='Exit', command=window.destroy,
+                          pady=3, padx=7, bg='LightSteelBlue1')
+    win_exit_btn.pack()
+
+
+def quit_program():
+    """
+    Saves elements in listbox_data to file
+    and closes the program.
+    """
+    # Writes listbox_data elements line by line to product_save.txt
+    with open("product_save.txt", "w") as file:
+        for d in listbox_data:
+            file.write(d + "\n")
+    # Closes the program
+    root.destroy()
+
+
+# ===== GUI Main Window
+
+# Title
+root.title('Shopping List')
+# Top icon
+root.iconbitmap('shopping_icon.ico')
+# Window size
+root.geometry('310x450')
+# Background color
+root.config(bg='ghost white')
+
+# Font for header
+header_font = Font(family='Arial', size=14)
+# Header for the program that uses custom font
+header_lbl = Label(root, text='SHOPPING LIST', font=header_font, bg='ghost white')
+
+# Importing image
+top_img = ImageTk.PhotoImage(Image.open('cart_icon.png'))
+# Creates image to a label so it can be used in program
+top_img_lbl = Label(image=top_img, bg='ghost white')
+
+# Holding string content for the entry
+content = StringVar()
+# Entry field for entering products
+product_entry = Entry(root, textvariable=content, bg='snow2', borderwidth=1)
+# Button to add product from product_entry to list
+add_btn = Button(root, text='Add product', command=add_product,
+                 padx=20, pady=5, borderwidth=1, bg='LightSteelBlue1')
+
+# Scrollbar if length of items is longer than my_listbox
+my_scrollbar = Scrollbar(root, orient=VERTICAL)
+# Listbox to display what is in listbox_data list
+my_listbox = Listbox(root, yscrollcommand=my_scrollbar.set, bg='snow2', borderwidth=1)
+my_scrollbar.config(command=my_listbox.yview)
+
+# Button to delete a selected item in my_listbox
+del_sel_btn = Button(root, text='Delete item', command=delete_selected,
+                     padx=10, pady=5, borderwidth=1, bg='LightSteelBlue1')
+# Button to delete all items in  my_listbox
+del_all_btn = Button(root, text='Delete all', command=delete_all,
+                     padx=10, pady=5, borderwidth=1, bg='LightSteelBlue1')
+
+# Button to exit program
+exit_btn = Button(root, text='Save and Exit', command=quit_program,
+                  padx=20, pady=5, borderwidth=1, bg='LightSteelBlue1')
+
+# Label over meal buttons
+meal_lbl = Label(root, text='Unsure what you want to eat this week? \n''Here is some recommended meals.',
+                 bg='ghost white', font='arial 9')
+# Buttons to open window for meal recommendations
+# Has two arguments, meal: dictionary of food items, meal_title: title for window
+meal_btn_1 = Button(root, text='Meal one', command=lambda: open_new_window(meals_1, meal_title_1),
+                    padx=10, pady=5, borderwidth=1, bg='LightSteelBlue2')
+meal_btn_2 = Button(root, text='Meal two', command=lambda: open_new_window(meals_2, meal_title_2),
+                    padx=10, pady=5, borderwidth=1, bg='LightSteelBlue2')
+meal_btn_3 = Button(root, text='Meal three', command=lambda: open_new_window(meals_3, meal_title_3),
+                    padx=7, pady=5, borderwidth=1, bg='LightSteelBlue2')
+meal_btn_4 = Button(root, text='Meal four', command=lambda: open_new_window(meals_4, meal_title_4),
+                    padx=9, pady=5, borderwidth=1, bg='LightSteelBlue2')
+
+# ===== GUI Main Window Grid Layout
+
+header_lbl.grid(row=0, columnspan=3)
+top_img_lbl.grid(row=1, column=0, columnspan=3)
+
+product_entry.grid(row=2, column=0, columnspan=2)
+add_btn.grid(row=3, column=0, columnspan=2)
+
+my_listbox.grid(row=2, column=2, rowspan=4, columnspan=1)
+my_scrollbar.grid(row=2, column=4, rowspan=4, sticky=N + S + W)
+
+del_sel_btn.grid(row=4, column=0, columnspan=1)
+del_all_btn.grid(row=4, column=1, columnspan=1)
+
+exit_btn.grid(row=5, column=0, columnspan=2)
+
+meal_lbl.grid(row=7, column=0, columnspan=3)
+meal_btn_1.grid(row=8, column=0, columnspan=2)
+meal_btn_2.grid(row=8, column=1, columnspan=2)
+meal_btn_3.grid(row=9, column=0, columnspan=2)
+meal_btn_4.grid(row=9, column=1, columnspan=2)
+
+
+# Loads saved list of products at the start of the program
+open_saved_list()
+
+
+# Function to start the loop of the window and keeps program running
+root.mainloop()
